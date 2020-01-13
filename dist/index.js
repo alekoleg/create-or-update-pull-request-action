@@ -836,6 +836,7 @@ async function getGitUser() {
   }
 }
 
+
 async function setGitUser({ name, email }) {
   core.debug(`Configuring user.name as "${name}"`);
   await runShellCommand(`git config --global user.name "${name}"`);
