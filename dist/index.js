@@ -809,7 +809,7 @@ async function main() {
     core.info(`Getting pull request number`);
     const re = /\d{1,}$/i
     const pr_numer = html_url.match(re)
-    await runShellCommand(`echo \"::set-output name=PULL_REQUEST_NUMBER::${pr_numer}\"`)
+    core.info(`::set-output name=PULL_REQUEST_NUMBER::${pr_numer}`)
 
   } catch (error) {
     core.debug(inspect(error));
