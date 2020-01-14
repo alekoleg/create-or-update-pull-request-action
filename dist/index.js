@@ -778,10 +778,7 @@ async function main() {
         headers: {
           authorization: `token ${process.env.GITHUB_TOKEN}`
         },
-        head: inputs.branch,
-        type: "pr",
-        is: "open", 
-        repo: process.env.GITHUB_REPOSITORY
+        q: q,
       });
 
       if (data.total_count > 0) {
