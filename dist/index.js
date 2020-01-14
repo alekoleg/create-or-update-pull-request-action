@@ -771,9 +771,17 @@ async function main() {
     );
 
     if (remoteBranchExists) {
+
+      core.debug(`Requestion Branch if exist ololol`);
       const q = `head:${inputs.branch} type:pr is:open repo:${process.env.GITHUB_REPOSITORY}`;
       const { data } = await request("GET /search/issues", {
-        q
+        headers: {
+          authorization: `token ${process.env.GITHUB_TOKEN}`
+        },
+        head: inputs.branch,
+        type:pr,
+        is:open, 
+        repo: process.env.GITHUB_REPOSITORY
       });
 
       if (data.total_count > 0) {
@@ -836,6 +844,7 @@ async function getGitUser() {
   }
 }
 
+
 async function setGitUser({ name, email }) {
   core.debug(`Configuring user.name as "${name}"`);
   await runShellCommand(`git config --global user.name "${name}"`);
@@ -855,7 +864,7 @@ async function checkOutRemoteBranch(branch) {
       return true;
     }
 
-    await runShellCommand(`git checkout -b ${branch}`);
+    await runShellCommand(`git checkout ${branch}`);
     
     return true;
   } catch (error) {
