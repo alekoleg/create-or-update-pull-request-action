@@ -747,47 +747,55 @@ async function main() {
       `git commit -m "${inputs.commitMessage}" --author "${inputs.author}"`
     );
 
-    const currentBranch = await runShellCommand(
-      `git rev-parse --abbrev-ref HEAD`
-    );
+    try {
+      await runShellCommand(`git branch "${inputs.branch}"`)
+    } catch (error) {
 
-    if (currentBranch === DEFAULT_BRANCH) {
-      core.info(`Already in base branch "${currentBranch}".`);
-    } else {
-      core.debug(`rebase all local changes on base branch`);
-      await runShellCommand(
-        `git fetch https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git ${DEFAULT_BRANCH}:${DEFAULT_BRANCH}`
-      );
-      await runShellCommand(`git stash --include-untracked`);
-      await runShellCommand(`git rebase -X theirs "${DEFAULT_BRANCH}"`);
     }
+    await runShellCommand(`git checkout "${inputs.branch}"`)
+    await runShellCommand(`git reset --hard "${TEMPORARY_BRANCH_NAME}"`)
+
+    // const currentBranch = await runShellCommand(
+    //   `git rev-parse --abbrev-ref HEAD`
+    // );
+
+    // if (currentBranch === DEFAULT_BRANCH) {
+    //   core.info(`Already in base branch "${currentBranch}".`);
+    // } else {
+    //   core.debug(`rebase all local changes on base branch`);
+    //   await runShellCommand(
+    //     `git fetch https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git ${DEFAULT_BRANCH}:${DEFAULT_BRANCH}`
+    //   );
+    //   await runShellCommand(`git stash --include-untracked`);
+    //   await runShellCommand(`git rebase -X theirs "${DEFAULT_BRANCH}"`);
+    // }
 
     core.debug(`Try to fetch and checkout remote branch "${inputs.branch}"`);
-    const remoteBranchExists = await checkOutRemoteBranch(inputs.branch);
+    // const remoteBranchExists = await checkOutRemoteBranch(inputs.branch);
 
     core.debug(`Pushing local changes`);
     await runShellCommand(
       `git push -f https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git HEAD:refs/heads/${inputs.branch}`
     );
 
-    if (remoteBranchExists) {
+    // if (remoteBranchExists) {
 
-      core.debug(`Requestion Branch if exist ololol`);
-      const q = `head:${inputs.branch} type:pr is:open repo:${process.env.GITHUB_REPOSITORY}`;
-      const { data } = await request("GET /search/issues", {
-        headers: {
-          authorization: `token ${process.env.GITHUB_TOKEN}`
-        },
-        q: q,
-      });
+    //   core.debug(`Requestion Branch if exist ololol`);
+    //   const q = `head:${inputs.branch} type:pr is:open repo:${process.env.GITHUB_REPOSITORY}`;
+    //   const { data } = await request("GET /search/issues", {
+    //     headers: {
+    //       authorization: `token ${process.env.GITHUB_TOKEN}`
+    //     },
+    //     q: q,
+    //   });
 
-      if (data.total_count > 0) {
-        core.info(
-          `Existing pull request for branch "${inputs.branch}" updated`
-        );
-        return;
-      }
-    }
+    //   if (data.total_count > 0) {
+    //     core.info(
+    //       `Existing pull request for branch "${inputs.branch}" updated`
+    //     );
+    //     return;
+    //   }
+    // }
 
     core.debug(`Creating pull request`);
     const {
