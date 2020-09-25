@@ -130,7 +130,7 @@ async function main() {
 
     core.debug(`Pushing local changes`);
     await runShellCommand(
-      `git push -f https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git HEAD:refs/heads/${inputs.branch}`
+      `GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push -f https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git HEAD:refs/heads/${inputs.branch}`
     );
 
     // if (remoteBranchExists) {
